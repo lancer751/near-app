@@ -3,6 +3,7 @@ module Api
     class CommentsController < ApplicationController
       before_action :set_comment, only: %i[ show update destroy ]
 
+      # skip_before_action :authenticate
 
       # GET /comments
       def index
@@ -16,7 +17,6 @@ module Api
         render json: @comment
       end
 
-      # skip_before_action :authenticate
 
       # POST /comments
       def create

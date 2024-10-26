@@ -8,38 +8,28 @@ module Api
     
       # GET /users
       def index
-        # @users = User.all
-        users = User.left_joins(:posts).distinct  # INNER JOIN para asegurarnos de obtener solo usuarios con posts y evitar duplicados
-        
-        render json: users.as_json(
-          only: [:id, :name, :email],    # Especifica los atributos del usuario
-          include: {
-            posts: {
-              only: [:id, :title, :content, :created_at, :image_url, :category_id]  # Atributos de los posts
-            }
-          }
-        ), status: :ok
-        
-        # posts = @users.posts
+        @users = User.all
+      
     
-        # render json: @users
+        render json: {users: User.all.map(&:as_json)}
       end
     
     
       # GET /users/1
       def show
-        user = User.left_joins(:posts).find(params[:id])  # LEFT JOIN para incluir usuarios sin posts
+        # user = User.left_joins(:posts).find(params[:id])  # LEFT JOIN para incluir usuarios sin posts
+        user = User.includes(posts: :tags).find(params[:id])
 
-        # Responder con los datos del usuario y sus posts
-        render json: user.to_json(
+        render json: user.as_json(
           only: [:id, :name, :email],
           include: {
             posts: {
-              only: [:id, :title, :content, :created_at]
+              only: [:id, :title, :content, :created_at],
+              methods: [:tag_names] # Usamos un método adicional para los nombres de tags
             }
           }
         ), status: :ok
-        # render json: @user
+
       end
     
       # POST /users
@@ -67,7 +57,7 @@ module Api
         if @user.destroy
           render json: { message: 'Usuario eliminado exitosamente' }, status: :ok
         else
-          render json: { error: 'No se pudo eliminar el usuario' }, status: :unprocessable_entity
+          render json: { error: 'No se pudo eliminar el usuario' }, status: :forbidden
         end
       end
     
@@ -79,7 +69,7 @@ module Api
     
         # Only allow a list of trusted parameters through.
         def user_params
-          params.require(:user).permit(:name, :email, :password, :role, :username)
+          params.require(:user).permit(:name, :email, :password, :role, :username, :profile_image_url)
         end
     end
     

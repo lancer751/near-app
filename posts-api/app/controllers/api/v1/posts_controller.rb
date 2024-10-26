@@ -2,32 +2,31 @@ module Api
   module V1 
     class PostsController < ApplicationController
       before_action :set_post, only: %i[ show update destroy ]
-    
+      
+      # skip_before_action :authenticate
       # GET /posts
       def index
         # @posts = Post.all
     
-        @posts = Post.includes(:tags).all
+        posts = Post.includes(:user, :tags, comments: :user).all
 
-        # Genera una estructura personalizada en la que los tags sean un array de nombres
-        posts_with_tags = @posts.map do |post|
-          post.as_json.merge("tags" => post.tags.pluck(:name))
-        end
-
-        render json: posts_with_tags
-
-        # render json: @posts.as_json(include: { tags: { only: :name } })
-
-        # render json: {posts: Post.all.map(&:as_json) }
+        render json: posts.map { |post| post.as_json(
+          only: [:id, :title, :created_at, :image_url],
+          methods: [:author_info, :tag_names, :serialized_comments]
+          ).merge(category: post.category.name)
+        }
 
       end
     
-      # skip_before_action :authenticate
     
       # GET /posts/1
       def show
 
-        render json: @post
+        # render json: @post
+        render json: @post.as_json(
+          only: [:id, :title, :created_at, :image_url],
+          methods: [:author_info, :tag_names, :serialized_comments]
+        ).merge(category: @post.category.name)
       end
     
       # POST /posts
@@ -48,8 +47,7 @@ module Api
           end
 
           render json: post.as_json(include: { tags: { only: [:id, :name] } }), status: :created, location: api_v1_post_url(post)
-          # render json: @post, status: :created, location: api_v1_user_url(@post)
-          # render json: @post.as_json(include: { tags: { only: [:id, :name] } }), status: :created, location: api_v1_post_url(@post)
+         
         else
           render json: post.errors.full_messages, status: :unprocessable_entity
         end
@@ -86,7 +84,7 @@ module Api
     
         # Only allow a list of trusted parameters through.
         def post_params
-          params.require(:post).permit(:title, :content, :user_id, :category_id, :image_url)
+          params.require(:post).permit(:title, :content, :user_id, :category_id, :image_url, :tags_names)
         end
     end
   end
