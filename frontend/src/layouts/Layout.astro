@@ -1,0 +1,78 @@
+---
+import AsideMenu from '../components/AsideMenu.astro';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Astro description" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body class="relative">
+		<div class="absolute w-full top-0 left-0 h-60 overflow-hidden -z-10">
+			<img src="/images/cover-user-account.jpg" alt="user-cover" class="h-full w-full object-cover object-center animate-scale animate-duration-1000">
+			<div class="absolute inset-0 bg-gradient-to-t from-sky-400/50 via-sky-400/20"></div>
+		</div>
+		<div id="app" class="container mx-auto pt-52 px-14 flex flex-col">
+			<AsideMenu/>
+			<main class="[grid-area:main] bg-[hsl(244,51%,23%)] rounded-lg overflow-hidden min-h-40" >
+				<slot />
+			</main>
+		</div>
+		<slot />
+	</body>
+</html>
+<style>
+	#app{
+		display: grid;
+		gap: 1rem;
+		grid-template-areas: 
+		"aside main main"
+		"player player player";
+		grid-template-columns: 350px 1fr;
+		grid-template-rows: 1fr auto
+	}
+</style>
+<style is:global>
+	:root {
+		--accent: 136, 58, 234;
+		--accent-light: 224, 204, 250;
+		--accent-dark: 49, 10, 101;
+		--accent-gradient: linear-gradient(
+			45deg,
+			rgb(var(--accent)),
+			rgb(var(--accent-light)) 30%,
+			white 60%
+		);
+	}
+	html {
+		font-family: system-ui, sans-serif;
+		background: hsl(252, 97%, 14%);
+	}
+	
+	body{
+        font-family: 'Fira Mono', monospace;
+    }
+	
+	code {
+		font-family:
+			Menlo,
+			Monaco,
+			Lucida Console,
+			Liberation Mono,
+			DejaVu Sans Mono,
+			Bitstream Vera Sans Mono,
+			Courier New,
+			monospace;
+	}
+</style>
