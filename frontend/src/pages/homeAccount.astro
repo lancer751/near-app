@@ -1,10 +1,39 @@
 ---
-import Authentication from "../layouts/Authentication.astro";
+import PostCard from "../components/PostCard.astro";
 import Layout from "../layouts/Layout.astro";
+import { getAllRecentPosts } from "../services/postsRequests";
 
+let posts
+const cookie = Astro.cookies.get("authToken")
+// Llamar a la función de obtención de posts con el token de autenticación
+if (cookie){
+    posts = await getAllRecentPosts(cookie?.value)
+}
 
 ---
 
 <Layout title="Near - HomePage">
+    {
+        posts.map(post => {
+            const {id, title, content, image_url, created_at, author_info, tag_names, category} = post
 
+            return <PostCard 
+                reverse = {false}
+                post_id = {id}
+                title={title}
+                post_image={image_url}
+                created_at={created_at}
+                author_info={author_info}
+                tag_names={tag_names}
+                category={category}
+                {content}
+            />
+        })
+    }
 </Layout>
+<!-- <script>
+    import { getAllRecentPosts } from "../services/postsRequests";
+
+    const posts = await getAllRecentPosts()
+    console.log(posts)
+</script> -->

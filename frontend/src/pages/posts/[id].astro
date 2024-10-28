@@ -1,0 +1,75 @@
+---
+import PostCard from "../../components/PostCard.astro";
+import CommentItem from "../../components/sections/CommentItem.astro";
+import Layout from "../../layouts/Layout.astro";
+import { getAllRecentPosts, getPostById } from "../../services/postsRequests";
+
+const cookieToken = Astro.cookies.get('authToken')
+
+const {id} = Astro.params
+
+export const getStaticPaths = ( async() => {
+    const posts = await getAllRecentPosts(cookieToken?.value)
+    return posts.map(post => ({
+        params: {id: post.id}
+    }));
+});
+
+const postInfo = await getPostById(id, cookieToken?.value)
+
+const {title, content, image_url, created_at, author_info, tag_names, category, serialized_comments} = postInfo
+console.log(serialized_comments)
+---
+
+<Layout title={title}>
+    <PostCard 
+        reverse = {true}
+        redirect = {false}
+        post_id = {id}
+        title={title}
+        post_image={image_url}
+        created_at={created_at}
+        author_info={author_info}
+        tag_names={tag_names}
+        category={category}
+        {content}
+    />
+    
+    <section class="bg-indigo-900 dark:bg-gray-900 py-8 lg:py-16 antialiased rounded-lg">
+        <div class="max-w-2xl mx-auto px-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-lg lg:text-2xl font-bold text-white dark:text-white">Discussion {`(${serialized_comments.length})`}</h2>
+            </div>
+            <form class="mb-6">
+                <div class="py-2 px-4 mb-4  rounded-lg rounded-t-lg border bg-gray-800 border-gray-700">
+                    <label for="comment" class="sr-only">Your comment</label>
+                    <textarea id="comment" rows="6"
+                        class="px-0 w-full text-sm border-0 focus:ring-0 focus:outline-none text-white dark:placeholder-gray-400 bg-gray-800"
+                        placeholder="Write a comment..." required></textarea>
+                </div>
+                <button type="submit"
+                    class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 hover:bg-green-500 transition-colors rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900">
+                    Post comment
+                </button>
+            </form>
+            {
+                serialized_comments.length === 0 ? 
+                    <p class="text-white mx-auto text-center">Aun no hay commentarios</p>
+                :
+                serialized_comments?.map(comment => {
+                    const {id, content, author, created_at} = comment
+
+                    return (
+                        <CommentItem
+                            comment_id = {id}
+                            author = {author}
+                            content = {content}
+                            created_at = {created_at}
+                        />
+                    )
+                })  
+            }
+
+        </div>
+    </section>
+</Layout>

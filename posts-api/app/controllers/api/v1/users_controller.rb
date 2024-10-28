@@ -21,7 +21,7 @@ module Api
         user = User.includes(posts: :tags).find(params[:id])
 
         render json: user.as_json(
-          only: [:id, :name, :email],
+          only: [:id, :name, :email, :username, :email],
           include: {
             posts: {
               only: [:id, :title, :content, :created_at],

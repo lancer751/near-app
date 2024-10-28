@@ -11,7 +11,7 @@ module Api
         posts = Post.includes(:user, :tags, comments: :user).all
 
         render json: posts.map { |post| post.as_json(
-          only: [:id, :title, :created_at, :image_url],
+          only: [:id, :title, :created_at, :image_url, :content],
           methods: [:author_info, :tag_names, :serialized_comments]
           ).merge(category: post.category.name)
         }
@@ -24,7 +24,7 @@ module Api
 
         # render json: @post
         render json: @post.as_json(
-          only: [:id, :title, :created_at, :image_url],
+          only: [:id, :title, :created_at, :image_url, :content],
           methods: [:author_info, :tag_names, :serialized_comments]
         ).merge(category: @post.category.name)
       end

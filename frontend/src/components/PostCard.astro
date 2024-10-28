@@ -1,54 +1,78 @@
 ---
-interface Props {
-	title: string;
+import { dateConvertion } from '../helpers/convertDate'
+
+
+interface Props{
+	reverse: boolean,
+	post_id: string
+	title: string,
+	author_info: object,
+	created_at:string,
+	category:string,
+	tag_names: string[],
+	content: string[]
+	post_image: string | null
 }
 
-const { title } = Astro.props;
+const {title, post_id, author_info, created_at, category, tag_names, content, post_image, reverse, redirect} = Astro.props
+const {username, id, name, profile_image_url} = author_info
+ 
+const formattedDate =  dateConvertion(created_at)
+
+
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-	</head>
-	<body class="min-h-screen relative z-10">
-        <div class="bg-blue-800/50 absolute -z-10 inset-0"></div>
-        <main class="container py-12">
-            <slot />
-        </main>
-	</body>
-</html>
-<style is:global>
-	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
-	}
-	html {
-		font-family: system-ui, sans-serif;
-		background: #13151a;
-	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
-	}
-</style>
+<div class=`w-full bg-[hsl(244,51%,23%)] px-10 py-8 text-gray-200 rounded-lg shadow-lg p-4 flex ${reverse ? 'flex-col-reverse': 'flex-col'} justify-between items-center gap-7 `>
+    <!-- Text Content -->
+    <div class="flex-grow w-full">
+        <a href=`/posts/${post_id}` class="text-3xl text-white font-semibold hover:text-teal-400 transition-colors" transition:name={`title-${created_at}`} transition:animate="fade" >{title}</a>
+		<div class="flex items-center gap-2 my-3">
+			<a href="#">
+				<img class="w-8 h-8 rounded-full" src=`${profile_image_url ? profile_image_url: "/images/user-profile.jpg"}` alt="user photo">
+			</a>
+			<a href={`users/${id}`} class="hover:text-teal-300 transition-colors">{username}</a>
+		</div>
+        <div class="flex flex-wrap items-center text-sm text-gray-400 gap-x-3 gap-y-1 mt-1">
+            <span class="flex items-center space-x-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H7a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-1M12 8v4m-4 4h8" />
+                </svg>
+                <span>{formattedDate}</span>
+            </span>
+            <span class="flex items-center space-x-1">
+                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-book-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12z" /><path d="M19 16h-12a2 2 0 0 0 -2 2" /><path d="M9 8h6" /></svg>
+				<div>
+					<a href=`/categories/${category}` class="hover:bg-teal-400 hover:text-white rounded-md px-2 py-1 transition-colors inline-block">{category}</a>
+				</div>
+            </span>
+			<div class="flex items-center w-max">
+				<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  class="stroke-teal-400"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-hash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 9l14 0" /><path d="M5 15l14 0" /><path d="M11 4l-4 16" /><path d="M17 4l-4 16" /></svg>
+				<div class="">
+					{
+						tag_names.map(tag => {
+							return (
+								<a href=`/tags/${tag}` class="hover:bg-teal-400 hover:text-white rounded-md px-2 py-1 transition-colors inline-block ">
+									{tag}
+								</a>
+							)
+						})
+					}
+					
+				</div>
+			</div>
+            
+        </div>
+        <p class="mt-2 text-normal text-slate-300 line-clamp-3">
+			{content}
+		</p>
+        <p class="text-sm text-slate-400 mt-1">160 words | 1 minute</p>
+    </div>
 
+    <!-- Image Section -->
+    <a href=`/posts/${post_id}` class=`flex-shrink-0 max-h-80 w-full min-w-80 self-center rounded-lg overflow-hidden place-self-center group relative ${!post_image && 'hidden' }`>
+        <img src={post_image} alt="Blog Preview" transition:name={`image-${created_at}`} transition:animate="fade" class="w-full h-full object-cover object-center lg:aspect-video">
+		<div class="absolute bg-black/30 transition-all inset-0 hidden group-hover:flex items-center justify-center">
+			<svg  xmlns="http://www.w3.org/2000/svg"  width="70"  height="70"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-right text-white group-hover:animate-zoom-in transition-transform hover:text-teal-400"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
+		</div>
+    </a>
+</div>
