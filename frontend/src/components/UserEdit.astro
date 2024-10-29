@@ -1,0 +1,142 @@
+---
+interface props{
+    userId: string,
+    username: string,
+    name: string,
+    email: string,
+    profile_image_url: string, 
+    role: string
+}
+
+const {username, name, email, profile_image_url, role, userId} = Astro.props
+
+---
+
+<div class="w-full max-w-xl mx-auto bg-slate-800 shadow-lg rounded-lg p-8">
+    <h2 class="text-2xl font-bold text-center text-white mb-6">Actualizar Usuario</h2>
+
+    <!-- Botones de Acción -->
+    <div class="flex justify-between mb-4">
+      <button id="editButton" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200">
+        Editar
+      </button>
+      <button id="deleteButton" class="bg-red-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-600 transition duration-200" disabled>
+        Eliminar
+      </button>
+    </div>
+
+    <!-- Formulario de actualización de usuario -->
+    <form method="POST" id="userForm" class="space-y-6" aria-valuenow={userId}>
+      <!-- Username -->
+      <div>
+        <label for="username" class="block text-sm font-medium text-slate-300">Nombre de Usuario</label>
+        <input type="text" id="username" name="username" value={username} class="mt-1 w-full px-4 py-2 border border-slate-600 rounded-md bg-slate-700 text-slate-200 focus:ring-2 focus:ring-blue-500" placeholder="Nombre de usuario" disabled>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label for="email" class="block text-sm font-medium text-slate-300">Correo Electrónico</label>
+        <input type="email" id="email" name="email" value={email} class="mt-1 w-full px-4 py-2 border border-slate-600 rounded-md bg-slate-700 text-slate-200 focus:ring-2 focus:ring-blue-500" placeholder="Correo electrónico" disabled>
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-slate-300">Contraseña</label>
+        <input type="password" id="password" name="password" class="mt-1 w-full px-4 py-2 border border-slate-600 rounded-md bg-slate-700 text-slate-200 focus:ring-2 focus:ring-blue-500" placeholder="Nueva contraseña" disabled>
+      </div>
+
+      <!-- Profile Image URL -->
+      <div>
+        <label for="profile_image_url" class="block text-sm font-medium text-slate-300">URL de Imagen de Perfil</label>
+        <input type="text" id="profile_image_url" value={profile_image_url} name="profile_image_url" class="mt-1 w-full px-4 py-2 border border-slate-600 rounded-md bg-slate-700 text-slate-200 focus:ring-2 focus:ring-blue-500" placeholder="URL de imagen de perfil" disabled>
+      </div>
+
+      <!-- Role -->
+      <div>
+        <label for="role" class="block text-sm font-medium text-slate-300">Rol</label>
+        <select id="role" name="role" class="mt-1 w-full px-4 py-2 border border-slate-600 rounded-md bg-slate-700 text-slate-200 focus:ring-2 focus:ring-blue-500" disabled>
+          <option value="admin">Admin</option>
+          <option value="editor">Editor</option>
+          <option value="lector">Lector</option>
+        </select>
+      </div>
+
+      <!-- Botón Actualizar -->
+      <div>
+        <button type="submit" id="submitButton" class="w-full bg-blue-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200" disabled>Actualizar</button>
+      </div>
+    </form>
+</div>
+
+<script>
+    import { updateUserInformation } from "../services/userRequests";
+    
+    const editButton = document.querySelector('#editButton');
+    const userForm = document.querySelector('#userForm');
+    const deleteButton = document.querySelector('#deleteButton')
+    const currentUser = userForm?.getAttribute('aria-valuenow')
+
+    editButton?.addEventListener('click', enableForm)
+    userForm?.addEventListener('input', enableDeleteButton)
+    deleteButton?.addEventListener('click', deleteUser)
+    userForm?.addEventListener('submit', updateCurrentUser)
+    // Función para habilitar el formulario cuando se hace clic en el botón Editar
+    function enableForm() {
+        const form = document.getElementById('userForm');
+        form.querySelectorAll('input, select, button[type="submit"]').forEach(element => {
+        element.disabled = false;
+        });
+        document.getElementById('editButton').disabled = true;
+    }
+
+    // Habilita el botón de eliminar cuando el formulario tiene algún valor ingresado
+    function enableDeleteButton() {
+        const form = document.getElementById('userForm');
+        const deleteButton = document.getElementById('deleteButton');
+        deleteButton.disabled = !Array.from(form.elements).some(input => input.value.trim() !== '');
+    }
+
+    // Función de ejemplo para el botón de eliminar
+    function deleteUser() {
+        if (confirm("¿Estás seguro de que deseas eliminar este usuario?")) {
+        // Aquí podrías realizar una solicitud al backend para eliminar el usuario
+        alert("Usuario eliminado (simulación)");
+        }
+    }
+
+    async function updateCurrentUser(e){
+        e.preventDefault()
+
+        // Extraer los datos del formulario
+        const formData = {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value,
+            profile_image_url: document.getElementById('profile_image_url').value,
+            email: document.getElementById('email').value,
+            role: document.getElementById('role').value
+        };
+        
+        const {message, status} = await updateUserInformation(currentUser, formData)
+
+        if (status === 1) {
+            // Redirecciona a la página de posts o actualiza el estado de autenticación
+            Toastify({
+                text: message,
+                className: "success",
+                style: {
+                    background: "linear-gradient(to right, #00b09b, #96c93d)",
+                }
+            }).showToast();
+
+        } else {
+            Toastify({
+                text: message,
+                className: "error",
+                style: {
+                    background: "#c90370",
+                }
+            }).showToast();
+        }
+    }
+
+</script>

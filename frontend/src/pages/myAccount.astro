@@ -1,0 +1,27 @@
+---
+import UserAccount from "../components/UserAccount.astro";
+import UserEdit from "../components/UserEdit.astro";
+import { decodeToken } from "../helpers/decodeJWT";
+import Layout from "../layouts/Layout.astro";
+import { getUserById } from "../services/userRequests";
+
+const cookieToken = Astro.cookies.get('authToken')
+const userToken = decodeToken(cookieToken?.value)
+
+const userInfo = await getUserById(userToken.user_id)
+
+const { id, username, name, role, profile_image_url, email} = userInfo
+console.log(role)
+---
+
+<Layout title={"My Account -Near"}>
+    <UserAccount userInfo={userInfo}/>
+    <UserEdit
+        userId = {id}
+        username = {username}
+        name = {name}
+        role = {role}
+        profile_image_url = {profile_image_url}
+        email = {email}
+    />
+</Layout>

@@ -35,6 +35,8 @@ const {id, username, name, role, profile_image_url} = userInfo
 		<link rel="icon" type="image/png" href="/favicon.png" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
 		<ViewTransitions/>
 	</head>
 	<body class="relative">
@@ -54,6 +56,8 @@ const {id, username, name, role, profile_image_url} = userInfo
 			</main>
 		</div>
 	</body>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
 </html>
 <script>
 	import { verifyUserAuthetication } from "../services/userAuthentication";

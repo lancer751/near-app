@@ -1,0 +1,110 @@
+---
+import { dateConvertion } from "../helpers/convertDate"
+
+
+interface props{
+    publishedForm: boolean,
+    title: string | null,
+    image: string | null,
+    category: string | null,
+    content: string | null,
+    date: string | null,
+    tags: string[] |null,
+}
+
+const {publishedForm, title, image, content, date, tags, category} = Astro.props
+
+const formatedDate = dateConvertion(date)
+
+---
+
+<div id="post-app" class="bg-gray-900 p-8">
+    <small class="text-slate-200">{publishedForm && formatedDate}</small>
+    <!-- Form Section for Adding/Editing Posts -->
+    <div id="post-form-container" class="bg-gray-800 p-6 rounded-md">
+      <h2 id="form-title" class="text-2xl text-white font-semibold mb-4">{!publishedForm? 'Create New Post' : title}</h2>
+      <form id="post-form">
+        <input type="hidden" class="" id="post-id" />
+  
+        <div class="mb-4">
+          <label for="title" class="block mb-2 text-white">Title</label>
+          <input
+            type="text"
+            id="title"
+            class="w-full p-2 rounded-md bg-gray-700 text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+            value={title}
+          />
+        </div>
+
+        <div class="mb-4">
+            <label for="title" class="block mb-2 text-white">Image</label>
+            <input
+              type="text"
+              id="title"
+              name="post_image"
+              class="w-full p-2 rounded-md bg-gray-700 text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+              value={image}
+            />
+          </div>
+
+          <div class="mb-4">
+            <label for="title" class="block mb-2 text-white">Category</label>
+            <input
+              type="text"
+              id="title"
+              name="post_image"
+              class="w-full p-2 rounded-md bg-gray-700 text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+              value={category}
+            />
+          </div>
+
+          <div class="mb-4">
+            <label for="title" class="block mb-2 text-white">Tags</label>
+            <input
+              type="text"
+              id="title"
+              name="post_image"
+              class="w-full p-2 rounded-md bg-gray-700 text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+              value={tags?.map(tag => tag)}
+            />
+          </div>
+  
+        <div class="mb-4">
+          <label for="content" class="block mb-2 text-white">Content</label>
+          <textarea
+            id="content"
+            class="w-full p-2 rounded-md bg-gray-700 text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+            
+          >{content}</textarea>
+        </div>
+  
+        <div class="flex space-x-4">
+          <button
+            type="submit"
+            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          >
+            Publish
+          </button>
+
+          <button
+            type="submit"
+            class=`bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 ${!publishedForm && 'hidden'}`
+          >
+            Delete
+          </button>
+        
+          <button
+            type="submit"
+            class=`bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 ${!publishedForm && 'hidden'}`
+          >
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>

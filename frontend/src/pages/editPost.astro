@@ -1,0 +1,35 @@
+---
+import PostForm from "../components/PostForm.astro";
+import { decodeToken } from "../helpers/decodeJWT";
+import Layout from "../layouts/Layout.astro";
+import { filterPosts } from "../services/postsRequests";
+import { getUserById } from "../services/userRequests";
+
+const cookieToken = Astro.cookies.get('authToken')
+const {user_id} = decodeToken(cookieToken?.value)
+
+const userInfo = await getUserById(user_id)
+const {username} = userInfo
+const filteredPosts = await filterPosts({username}, cookieToken?.value)
+
+---
+
+<Layout title="CRUD - Posts">
+    <PostForm/>
+    
+    {
+      filteredPosts.map(post => {
+        const {id, title, content, image_url, created_at, tag_names, category} = post
+
+        return <PostForm
+          publishedForm = {true}
+          title = {title}
+          content = {content}
+          image = {image_url}
+          category = {category}
+          tags = {tag_names}
+          date = {created_at}
+        />
+      })
+    }
+</Layout>

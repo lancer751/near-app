@@ -26,7 +26,6 @@ export async function getAllRecentPosts(tokenAccess: string | undefined) {
   }
 }
 
-
 export async function getPostById(id:string | undefined, authToken:string | undefined){
   if(id === undefined || authToken === undefined){
     return {message: 'Token expirado'}
@@ -48,3 +47,15 @@ export async function getPostById(id:string | undefined, authToken:string | unde
   return postData
 }
   
+export async function filterPosts(filters, token:string){
+  console.log(token)
+
+  const {username, category, tags, title} = filters
+
+  const postsToFilter = await getAllRecentPosts(token)
+
+  
+  return postsToFilter.filter(post => {
+    return post.author_info.username === username 
+  }) 
+}

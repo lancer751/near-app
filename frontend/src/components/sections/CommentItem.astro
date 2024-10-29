@@ -43,7 +43,7 @@ const {id, name, username, profile_image_url} = author
                 </li>
                 <li>
                     <a href="#"
-                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Remove</a>
+                        class="block py-2 px-4 hover:bg-red-600 hover:text-white dark:hover:bg-red-700 dark:hover:text-white">Remove</a>
                 </li>
                 <li>
                     <a href="#"
@@ -65,3 +65,37 @@ const {id, name, username, profile_image_url} = author
         </button>
     </div>
 </article>
+
+<script>
+    import { Collapse } from 'flowbite';
+    // set the target element that will be collapsed or expanded (eg. navbar menu)
+    const $targetEl = document.getElementById('dropdownComment1');
+
+    // optionally set a trigger element (eg. a button, hamburger icon)
+    const $triggerEl = document.getElementById('dropdownComment1Button');
+
+    // optional options with default values and callback functions
+    const options = {
+        onCollapse: () => {
+            console.log('element has been collapsed');
+        },
+        onExpand: () => {
+            console.log('element has been expanded');
+        },
+        onToggle: () => {
+            console.log('element has been toggled');
+        },
+    };
+
+    const instanceOptions = {
+    id: 'dropdownComment1',
+    override: false
+    };
+
+        /*
+    * $targetEl: required
+    * $triggerEl: optional
+    * options: optional
+    */
+    const collapse = new Collapse($targetEl, $triggerEl, options, instanceOptions);
+</script>

@@ -1,0 +1,45 @@
+---
+import PostCard from "../../components/PostCard.astro";
+import UserAccount from "../../components/UserAccount.astro";
+import Layout from "../../layouts/Layout.astro";
+import { filterPosts } from "../../services/postsRequests";
+import { getAllUsersNear, getUserById } from "../../services/userRequests";
+
+const cookieToken = Astro.cookies.get('authToken')
+
+const {id} = Astro.params
+
+export const getStaticPaths = ( async() => {
+    const users = await getAllUsersNear()
+    return users.map(user => ({
+        params: {id: user.id}
+    }));
+});
+
+
+const userInfo = await getUserById(id)
+const {posts, username, name, role, profile_image_url, email} = userInfo
+const filteredPosts = await filterPosts({username}, cookieToken?.value)
+---
+
+<Layout title={username}>
+    <UserAccount userInfo={userInfo}/>
+    
+    {
+        filteredPosts.map(post => {
+            const {id, title, content, image_url, created_at, author_info, tag_names, category} = post
+
+            return <PostCard 
+                reverse = {false}
+                post_id = {id}
+                title={title}
+                post_image={image_url}
+                created_at={created_at}
+                author_info={author_info}
+                tag_names={tag_names}
+                category={category}
+                {content}
+            />
+        })
+    }
+</Layout>

@@ -18,7 +18,7 @@ export const getStaticPaths = ( async() => {
 const postInfo = await getPostById(id, cookieToken?.value)
 
 const {title, content, image_url, created_at, author_info, tag_names, category, serialized_comments} = postInfo
-console.log(serialized_comments)
+
 ---
 
 <Layout title={title}>
@@ -36,7 +36,7 @@ console.log(serialized_comments)
     />
     
     <section class="bg-indigo-900 dark:bg-gray-900 py-8 lg:py-16 antialiased rounded-lg">
-        <div class="max-w-2xl mx-auto px-4">
+        <div class="w-[90%] mx-auto px-4">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-lg lg:text-2xl font-bold text-white dark:text-white">Discussion {`(${serialized_comments.length})`}</h2>
             </div>

@@ -14,7 +14,7 @@ interface Props{
 	post_image: string | null
 }
 
-const {title, post_id, author_info, created_at, category, tag_names, content, post_image, reverse, redirect} = Astro.props
+const {title, post_id, author_info, created_at, category, tag_names, content, post_image, reverse} = Astro.props
 const {username, id, name, profile_image_url} = author_info
  
 const formattedDate =  dateConvertion(created_at)
