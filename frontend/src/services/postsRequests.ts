@@ -59,3 +59,22 @@ export async function filterPosts(filters, token:string){
     return post.author_info.username === username 
   }) 
 }
+
+export async function createNewPost(postData: object, tokenAccess: string | null){
+
+  try{
+    const res = await fetch('http://localhost:3000/api/v1/posts', {
+      method: "PUT",
+      body: JSON.stringify(postData),
+      headers:{
+        "Authorization": `Bearer ${tokenAccess}`
+      }
+    })
+    console.log(res.json())
+    return {"message": "Usuario actulizado"}
+  }catch(error){
+    console.error(error)
+    return {message: "Error al actualizar el usuario"} 
+  }
+
+}

@@ -31,27 +31,22 @@ module Api
     
       # POST /posts
       def create
-        # @post = Post.new(post_params)
-    
-        if post = @current_user.posts.create(post_params)
-        # if @post.save
-          
+        post = @current_user.posts.new(post_params)
+      
+        if post.save
           if params[:tags].present?
             params[:tags].each do |tag_name|
-              # Encontrar o crear el tag
               tag = Tag.find_or_create_by(name: tag_name)
-
-              # Asociar el tag al post
               post.tags << tag unless post.tags.include?(tag)
             end
           end
-
+      
           render json: post.as_json(include: { tags: { only: [:id, :name] } }), status: :created, location: api_v1_post_url(post)
-         
         else
           render json: post.errors.full_messages, status: :unprocessable_entity
         end
       end
+      
     
       # PATCH/PUT /posts/1
       def update
